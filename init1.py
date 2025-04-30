@@ -33,11 +33,10 @@ def search_flights():
     if return_date:
         query = """
         SELECT * FROM flight
-        WHERE departure_airport LIKE %s
-          AND arrival_airport LIKE %s
-          AND departure_datetime >= %s
-          AND arrival_datetime <= %s
-          AND departure_datetime >= NOW()
+        WHERE departure_airport_code LIKE %s
+          AND arrival_airport_code LIKE %s
+          AND departure_date >= %s
+          AND arrival_date <= %s
         """
         cursor.execute(query, (f"%{source}%", f"%{destination}%", departure_date, return_date))
     else:
@@ -46,7 +45,6 @@ def search_flights():
         WHERE departure_airport LIKE %s
           AND arrival_airport LIKE %s
           AND departure_datetime >= %s
-          AND departure_datetime >= NOW()
         """
         cursor.execute(query, (f"%{source}%", f"%{destination}%", departure_date))
 
