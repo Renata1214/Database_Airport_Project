@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Register</h2>
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    <form action="/registerAuth" method="POST">
+        <div class="form-group">
+            <label for="user_type">Register as:</label>
+            <select name="user_type" class="form-control" required onchange="toggleUserFields(this.value)">
+                <option value="">--Select--</option>
+                <option value="customer">Customer</option>
+                <option value="staff">Airline Staff</option>
+            </select>
+        </div>
+
+        <!-- Customer Fields -->
+        <div id="customerFields" style="display: none;">
+            <h4>Customer Info</h4>
+            <input type="email" class="form-control mb-2" name="email" placeholder="Email" required>
+            <input type="text" class="form-control mb-2" name="customer_name" placeholder="Full Name" required>
+            <input type="text" class="form-control mb-2" name="cust_phone_number" placeholder="Phone Number">
+            <input type="number" class="form-control mb-2" name="building_number" placeholder="Building Number">
+            <input type="text" class="form-control mb-2" name="street" placeholder="Street">
+            <input type="text" class="form-control mb-2" name="cust_city" placeholder="City">
+            <input type="text" class="form-control mb-2" name="state" placeholder="State">
+            <input type="text" class="form-control mb-2" name="passport_number" placeholder="Passport Number" required>
+            <label for="passport_expiration_date">Passport Expiration Date</label>
+            <input type="date" id="passport_expiration_date" class="form-control mb-2" name="passport_expiration_date" required>
+            <input type="text" class="form-control mb-2" name="passport_country" placeholder="Passport Country" required>
+            <label for="cust_DOB">Date of Birth</label>
+            <input type="date" id="cust_DOB" class="form-control mb-2" name="cust_DOB" required>
+        </div>
+
+        <!-- Staff Fields -->
+        <div id="staffFields" style="display: none;">
+            <h4>Staff Info</h4>
+            <input type="text" class="form-control mb-2" name="username" placeholder="Username" required>
+            <select class="form-control mb-2" name="airline_name" required>
+                {% for airline in airlines %}
+                    <option value="{{ airline }}">{{ airline }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" class="form-control mb-2" name="first_name" placeholder="First Name" required>
+            <input type="text" class="form-control mb-2" name="last_name" placeholder="Last Name" required>
+            <input type="date" class="form-control mb-2" name="date_of_birth" placeholder="Date of Birth">
+        </div>
+
+        <!-- Shared -->
+        <div class="form-group mt-3">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Register</button>
+        <a href="/" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+    function toggleUserFields(userType) {
+        const custFields = document.getElementById('customerFields');
+        const staffFields = document.getElementById('staffFields');
+    
+        if (userType === 'customer') {
+            custFields.style.display = 'block';
+            staffFields.style.display = 'none';
+            enableFields(custFields);
+            disableFields(staffFields);
+        } else if (userType === 'staff') {
+            staffFields.style.display = 'block';
+            custFields.style.display = 'none';
+            enableFields(staffFields);
+            disableFields(custFields);
+        } else {
+            custFields.style.display = 'none';
+            staffFields.style.display = 'none';
+            disableFields(custFields);
+            disableFields(staffFields);
+        }
+    }
+    
+    function enableFields(container) {
+        const inputs = container.querySelectorAll('input, select, textarea');
+        inputs.forEach(el => el.disabled = false);
+    }
+    
+    function disableFields(container) {
+        const inputs = container.querySelectorAll('input, select, textarea');
+        inputs.forEach(el => el.disabled = true);
+    }
+    
+    // On page load, apply initial toggle
+    window.onload = () => {
+        const selectedType = document.querySelector('[name="user_type"]').value;
+        toggleUserFields(selectedType);
+    };
+</script>
+</body>
+</html>
