@@ -17,8 +17,16 @@ conn = pymysql.connect(host='localhost',
 # Home route
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    cursor = conn.cursor() 
+
+    # Get airport codes for the dropdown
+    cursor.execute("SELECT code FROM airport")
+    airport_codes = [row['code'] for row in cursor.fetchall()]
+
     if 'username' in session and 'user_type' in session:
         return redirect(url_for(f"{session['user_type']}_home"))
+
+    flights = []
 
     if request.method == 'POST':
         source = request.form['source']
@@ -26,14 +34,13 @@ def home():
         departure_date = request.form['departure_date']
         return_date = request.form.get('return_date')
 
-        cursor = conn.cursor()
         if return_date:
             query = """
                 SELECT * FROM flight
                 WHERE departure_airport_code LIKE %s
                   AND arrival_airport_code LIKE %s
-                  AND DATE(departure_datetime) >= %s
-                  AND DATE(arrival_datetime) <= %s
+                  AND DATE(departure_date) >= %s
+                  AND DATE(arrival_date) <= %s
             """
             cursor.execute(query, (f"%{source}%", f"%{destination}%", departure_date, return_date))
         else:
@@ -41,20 +48,20 @@ def home():
                 SELECT * FROM flight
                 WHERE departure_airport_code LIKE %s
                   AND arrival_airport_code LIKE %s
-                  AND DATE(departure_datetime) >= %s
+                  AND DATE(departure_date) >= %s
             """
             cursor.execute(query, (f"%{source}%", f"%{destination}%", departure_date))
 
         flights = cursor.fetchall()
-        cursor.close()
-        return render_template('home.html', flights=flights)
 
-    return render_template('home.html')
+    cursor.close()
+    return render_template('home.html', flights=flights, airport_codes=airport_codes)
 
+'''
 @app.route('/login')
 def login():
     return render_template('login.html')
-
+'''
 @app.route('/register')
 def register():
     cursor = conn.cursor()
@@ -72,7 +79,7 @@ def loginAuth():
 
     cursor = conn.cursor()
     if user_type == 'customer':
-        cursor.execute("SELECT * FROM customer WHERE email = %s AND password = %s", (username, hashed_pw))
+        cursor.execute("SELECT * FROM customer WHERE customer_email = %s AND cust_password = %s", (username, hashed_pw))
     else:
         cursor.execute("SELECT * FROM airline_staff WHERE username = %s AND password = %s", (username, hashed_pw))
 
@@ -100,8 +107,8 @@ def registerAuth():
             return render_template('register.html', error="Customer already exists")
 
         insert_query = '''
-            INSERT INTO customer (email, name, password, building_number, street, city, state,
-                                  phone_number, passport_number, passport_expiration, passport_country, date_of_birth)
+            INSERT INTO customer (email, customer_name, password, building_number, street, cust_city, state,
+                                  cust_phone_number, passport_number, passport_expiration_date, passport_country, cust_DOB)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
         cursor.execute(insert_query, (
@@ -171,9 +178,9 @@ def staff_home():
             WHERE airline_name = %s
               AND (%s IS NULL OR departure_airport_code = %s)
               AND (%s IS NULL OR arrival_airport_code = %s)
-              AND (%s IS NULL OR DATE(departure_datetime) >= %s)
-              AND (%s IS NULL OR DATE(departure_datetime) <= %s)
-            ORDER BY departure_datetime ASC
+              AND (%s IS NULL OR DATE(departure_date) >= %s)
+              AND (%s IS NULL OR DATE(departure_date) <= %s)
+            ORDER BY departure_datet ASC
         '''
         cursor.execute(query, (
             airline_name,
@@ -186,9 +193,9 @@ def staff_home():
         query = '''
             SELECT * FROM flight
             WHERE airline_name = %s
-              AND departure_datetime >= NOW()
-              AND departure_datetime <= DATE_ADD(NOW(), INTERVAL 30 DAY)
-            ORDER BY departure_datetime ASC
+              AND departure_date >= NOW()
+              AND departure_date <= DATE_ADD(NOW(), INTERVAL 30 DAY)
+            ORDER BY departure_date ASC
         '''
         cursor.execute(query, (airline_name,))
 
@@ -196,94 +203,9 @@ def staff_home():
     cursor.close()
     return render_template('staff_home.html', flights=flights, airline=airline_name)
 
-@app.route('/flight_customers/<airline_name>/<flight_num>/<departure_datetime>')
-def flight_customers(airline_name, flight_num, departure_datetime):
-    if session.get('user_type') != 'staff':
-        return redirect('/')
-
-    cursor = conn.cursor()
-    query = '''
-        SELECT customer.email, purchase.purchase_date
-        FROM ticket
-        JOIN purchase ON ticket.ticket_id = purchase.ticket_id
-        JOIN customer ON customer.email = purchase.customer_email
-        WHERE ticket.airline_name = %s AND ticket.flight_number = %s AND ticket.departure_datetime = %s
-    '''
-    cursor.execute(query, (airline_name, flight_num, departure_datetime))
-    customers = cursor.fetchall()
-    cursor.close()
-
-    return render_template('flight_customers.html', customers=customers, flight_number=flight_num)
-
-@app.route('/add_flight')
-def add_flight():
-    return render_template('add_flight.html')
-
-@app.route('/change_flight_status')
-def change_flight_status():
-    return render_template('change_flight_status.html')
-
-@app.route('/add_airplane', methods=['GET'])
-def add_airplane():
-    if session.get('user_type') != 'staff':
-        return "Unauthorized", 403
-
-    cursor = conn.cursor()
-    cursor.execute("SELECT airline_name FROM airline_staff WHERE username = %s", (session['username'],))
-    result = cursor.fetchone()
-    cursor.close()
-
-    if not result:
-        return "Staff not found", 404
-
-    airline_name = result['airline_name']
-    return render_template('add_airplane.html', airline_name=airline_name)
-
-@app.route('/submit_airplane', methods=['POST'])
-def submit_airplane():
-    if session.get('user_type') != 'staff':
-        return "Unauthorized", 403
-
-    cursor = conn.cursor()
-    cursor.execute("SELECT airline_name FROM airline_staff WHERE username = %s", (session['username'],))
-    result = cursor.fetchone()
-
-    if not result:
-        return "Staff not found", 404
-
-    airline_name = result['airline_name']
-    num_seats = request.form.get('num_seats')
-    company = request.form.get('manufacturing_company')
-
-    if not num_seats or not company:
-        return "Missing fields", 400
-
-    cursor.execute("SELECT MAX(airplane_id) AS max_id FROM airplane")
-    max_id = cursor.fetchone()['max_id']
-    new_id = 1 if max_id is None else max_id + 1
-
-    insert = '''INSERT INTO airplane (airplane_id, airline_name, num_seats, manufacturing_company)
-                VALUES (%s, %s, %s, %s)'''
-    cursor.execute(insert, (new_id, airline_name, num_seats, company))
-    conn.commit()
-
-    cursor.execute("SELECT * FROM airplane WHERE airline_name = %s", (airline_name,))
-    airplanes = cursor.fetchall()
-    cursor.close()
-
-    return render_template('airplanes_confirmation.html', airline_name=airline_name, airplanes=airplanes)
-
-@app.route('/add_airport')
-def add_airport():
-    return render_template('add_airport.html')
-
-@app.route('/view_ratings')
-def view_ratings():
-    return render_template('view_ratings.html')
-
-@app.route('/view_reports')
-def view_reports():
-    return render_template('view_reports.html')
+@app.route('/customer_home')
+def cust_home():
+    return render_template('customer_home.html')
 
 @app.route('/logout')
 def logout():
@@ -295,3 +217,4 @@ app.secret_key = 'some key that you will never guess'
 
 if __name__ == "__main__":
     app.run('127.0.0.1', 5000, debug=True)
+

@@ -23,30 +23,32 @@
         <!-- Customer Fields -->
         <div id="customerFields" style="display: none;">
             <h4>Customer Info</h4>
-            <input type="email" class="form-control mb-2" name="email" placeholder="Email">
-            <input type="text" class="form-control mb-2" name="customer_name" placeholder="Full Name">
+            <input type="email" class="form-control mb-2" name="email" placeholder="Email" required>
+            <input type="text" class="form-control mb-2" name="customer_name" placeholder="Full Name" required>
             <input type="text" class="form-control mb-2" name="cust_phone_number" placeholder="Phone Number">
             <input type="number" class="form-control mb-2" name="building_number" placeholder="Building Number">
             <input type="text" class="form-control mb-2" name="street" placeholder="Street">
             <input type="text" class="form-control mb-2" name="cust_city" placeholder="City">
             <input type="text" class="form-control mb-2" name="state" placeholder="State">
-            <input type="text" class="form-control mb-2" name="passport_number" placeholder="Passport Number">
-            <input type="date" class="form-control mb-2" name="passport_expiration_date" placeholder="Expiration Date">
-            <input type="text" class="form-control mb-2" name="passport_country" placeholder="Passport Country">
-            <input type="date" class="form-control mb-2" name="cust_DOB" placeholder="Date of Birth">
+            <input type="text" class="form-control mb-2" name="passport_number" placeholder="Passport Number" required>
+            <label for="passport_expiration_date">Passport Expiration Date</label>
+            <input type="date" id="passport_expiration_date" class="form-control mb-2" name="passport_expiration_date" required>
+            <input type="text" class="form-control mb-2" name="passport_country" placeholder="Passport Country" required>
+            <label for="cust_DOB">Date of Birth</label>
+            <input type="date" id="cust_DOB" class="form-control mb-2" name="cust_DOB" required>
         </div>
 
         <!-- Staff Fields -->
         <div id="staffFields" style="display: none;">
             <h4>Staff Info</h4>
-            <input type="text" class="form-control mb-2" name="username" placeholder="Username">
-            <select class="form-control mb-2" name="airline_name">
+            <input type="text" class="form-control mb-2" name="username" placeholder="Username" required>
+            <select class="form-control mb-2" name="airline_name" required>
                 {% for airline in airlines %}
                     <option value="{{ airline }}">{{ airline }}</option>
                 {% endfor %}
             </select>
-            <input type="text" class="form-control mb-2" name="first_name" placeholder="First Name">
-            <input type="text" class="form-control mb-2" name="last_name" placeholder="Last Name">
+            <input type="text" class="form-control mb-2" name="first_name" placeholder="First Name" required>
+            <input type="text" class="form-control mb-2" name="last_name" placeholder="Last Name" required>
             <input type="date" class="form-control mb-2" name="date_of_birth" placeholder="Date of Birth">
         </div>
 
