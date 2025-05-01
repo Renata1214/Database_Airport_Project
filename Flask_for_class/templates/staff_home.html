@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ airline }} - Staff Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h1, h2 { text-align: center; }
+        table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+        table { width: 100%; margin-top: 20px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>{{ airline }} Staff Dashboard</h1>
+
+    <form method="POST">
+        <h2>Filter Flights</h2>
+        Source (City or Airport): <input type="text" name="source">
+        Destination (City or Airport): <input type="text" name="destination"><br><br>
+        From: <input type="date" name="start_date">
+        To: <input type="date" name="end_date"><br><br>
+        <button type="submit">Apply Filter</button>
+    </form>
+
+    <h2>Flight Listings</h2>
+    {% if flights %}
+    <table>
+        <thead>
+            <tr>
+                <th>Flight #</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+                <th>Status</th>
+                <th>Customers</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flight in flights %}
+            <tr>
+                <td>{{ flight.flight_number }}</td>
+                <td>{{ flight.departure_airport }}</td>
+                <td>{{ flight.arrival_airport }}</td>
+                <td>{{ flight.departure_datetime }}</td>
+                <td>{{ flight.arrival_datetime }}</td>
+                <td>{{ flight.status }}</td>
+                <td><a href="/staff/customers/{{ flight.airline_name }}/{{ flight.flight_number }}/{{ flight.departure_datetime }}">View Customers</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No flights found.</p>
+    {% endif %}
+</body>
+</html>
