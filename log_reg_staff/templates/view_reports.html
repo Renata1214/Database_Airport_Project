@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ticket Sales Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Ticket Sales Report for {{ airline }}</h2>
+
+    <form method="POST">
+        <label>Start Date:</label>
+        <input type="date" name="start_date" value="{{ start_date }}">
+        <label>End Date:</label>
+        <input type="date" name="end_date" value="{{ end_date }}">
+        <button type="submit">Filter</button>
+    </form>
+
+    <canvas id="ticketsChart" width="800" height="400"></canvas>
+
+    <script>
+        const chartLabels = {{ labels | tojson }};
+        const chartData = {{ data | tojson }};
+
+        const ctx = document.getElementById('ticketsChart').getContext('2d');
+        const ticketsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Tickets Sold',
+                    data: chartData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Tickets Sold per Flight' }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Flight (Date)' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Tickets Sold' },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+    <h3>Raw Data</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Flight Number</th>
+                <th>Departure Date</th>
+                <th>Tickets Sold</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.flight_number }}</td>
+                <td>{{ r.departure_date }}</td>
+                <td>{{ r.tickets_sold }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
