@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Add Airplane</title></head>
+<body>
+    <h2>Add Airplane for Airline: {{ airline_name }}</h2>
+    <form action="{{ url_for('submit_airplane') }}" method="POST">
+        Number of Seats: <input type="number" name="num_seats" required><br><br>
+        Manufacturing Company: <input type="text" name="manufacturing_company" required><br><br>
+        <button type="submit">Add Airplane</button>
+    </form>
+</body>
+</html>

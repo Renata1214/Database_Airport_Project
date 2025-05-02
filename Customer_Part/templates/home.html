@@ -1,0 +1,150 @@
+<!-- home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Airline Reservation - Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            top: 25%;
+            left: 35%;
+            width: 30%;
+            padding: 20px;
+            background: white;
+            border: 2px solid black;
+            z-index: 1000;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Welcome to the Airline Reservation System</h1>
+
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label>Source Airport Code</label>
+                <select class="form-control" name="source" required>
+                    <option value="">Select source</option>
+                    {% for code in airport_codes %}
+                        <option value="{{ code }}">{{ code }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Destination Airport Code</label>
+                <select class="form-control" name="destination" required>
+                    <option value="">Select destination</option>
+                    {% for code in airport_codes %}
+                        <option value="{{ code }}">{{ code }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Departure Date (Optional)</label>
+                <input type="date" class="form-control" name="departure_date">
+            </div>
+            <div class="form-group">
+                <label>Return Date (Optional)</label>
+                <input type="date" class="form-control" name="return_date">
+            </div>
+            <button type="submit" class="btn btn-primary">Search Flights</button>
+        </form>
+
+        {% if login_error %}
+            <div class="alert alert-danger mt-3">{{ login_error }}</div>
+        {% endif %}
+
+        <button class="btn btn-outline-primary mt-3" onclick="openPopup('loginPopup')">Login</button>
+        <a href="/register" class="btn btn-outline-success mt-3">Register</a>
+
+        {% if flights %}
+            <h3 class="mt-5">Search Results</h3>
+            <table class="table table-bordered mt-2">
+                <thead>
+                    <tr>
+                        <th>Flight Number</th>
+                        <th>Airline</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flight in flights %}
+                    <tr>
+                        <td>{{ flight.flight_number }}</td>
+                        <td>{{ flight.airline_name }}</td>
+                        <td>{{ flight.departure_airport_code }}</td>
+                        <td>{{ flight.arrival_airport_code }}</td>
+                        <td>{{ flight.departure_date }}</td>
+                        <td>{{ flight.arrival_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closePopup('loginPopup')"></div>
+
+    <div id="loginPopup" class="popup">
+        <h4>Login</h4>
+        <form action="/loginAuth" method="POST">
+            <div class="form-group">
+                <label>User Type</label>
+                <select class="form-control" name="user_type" required>
+                    <option value="customer">Customer</option>
+                    <option value="staff">Airline Staff</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label id="usernameLabel">Username/Email</label>
+                <input type="text" class="form-control" name="username" required>
+            </div>
+            
+            <script>
+            document.querySelector('select[name="user_type"]').addEventListener('change', function() {
+                const label = document.getElementById('usernameLabel');
+                if (this.value === 'staff') {
+                    label.innerText = 'Username';
+                } else if (this.value === 'customer') {
+                    label.innerText = 'Email';
+                } else {
+                    label.innerText = 'Username/Email';
+                }
+            });
+            </script>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="button" class="btn btn-secondary" onclick="closePopup('loginPopup')">Cancel</button>
+        </form>
+    </div>
+    
+    <script>
+        function openPopup(id) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById(id).style.display = 'block';
+        }
+        function closePopup(id) {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById(id).style.display = 'none';
+        }
+    </script>
+</body>
+</html>
