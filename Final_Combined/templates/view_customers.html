@@ -1,0 +1,24 @@
+<h2>Customers for Flight {{ airline }} {{ flight_number }} on {{ departure_date }} at {{ departure_time }}</h2>
+
+{% if customers %}
+<table>
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.customer_email }}</td>
+            <td>{{ customer.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No customers found for this flight.</p>
+{% endif %}
+
+<a href="/staff_home">Back to Dashboard</a>

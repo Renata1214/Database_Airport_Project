@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Purchase Ticket</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Purchase Ticket</h2>
+        <div>
+            <a href="/customer_home" class="btn btn-secondary">Back to My Flights</a>
+            <a href="/logout" class="btn btn-danger ml-2">Logout</a>
+        </div>
+    </div>
+
+    <form method="POST" action="/purchase" class="mt-4">
+        <!-- Hidden flight data -->
+        <input type="hidden" name="airline_name" value="{{ airline_name }}">
+        <input type="hidden" name="flight_number" value="{{ flight_number }}">
+        <input type="hidden" name="departure_date" value="{{ departure_date }}">
+        <input type="hidden" name="departure_time" value="{{ departure_time }}">
+
+        <div class="form-group">
+            <label>Airline</label>
+            <input class="form-control" value="{{ airline_name }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>Flight Number</label>
+            <input class="form-control" value="{{ flight_number }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>Departure Date</label>
+            <input class="form-control" value="{{ departure_date }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>Departure Time</label>
+            <input class="form-control" value="{{ departure_time }}" disabled>
+        </div>
+
+        <div class="form-group">
+            <label>Ticket Price (USD)</label>
+            <input class="form-control" value="{{ final_price }}" disabled>
+            <input type="hidden" name="sold_price" value="{{ final_price }}">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label>Card Type</label>
+                <select name="card_type" class="form-control" required>
+                    <option value="">Select</option>
+                    <option value="Visa">Visa</option>
+                    <option value="Amex">Amex</option>
+                    <option value="MC">MasterCard</option>
+                </select>
+            </div>
+            <div class="form-group col-md-8">
+                <label>Card Number</label>
+                <input type="text" name="card_number" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Name on Card</label>
+            <input type="text" name="name_on_card" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Expiration Date</label>
+            <input type="date" name="expiration_date" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Confirm Purchase</button>
+    </form>
+</div>
+</body>
+</html>

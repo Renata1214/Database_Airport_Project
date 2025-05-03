@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate Your Flight</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="w-50">
+    <h1 class="text-center mb-4">✈️ Rate Your Flight!!</h2>
+
+    <form method="POST" action="/review_flight">
+        <input type="hidden" name="airline_name" value="{{ airline_name }}">
+        <input type="hidden" name="flight_number" value="{{ flight_number }}">
+        <input type="hidden" name="departure_date" value="{{ departure_date }}">
+        <input type="hidden" name="departure_time" value="{{ departure_time }}">
+
+        <div class="form-group">
+            <label for="rating">Rating (1 to 5)</label>
+            <select class="form-control" name="rating" required>
+                <option value="">Choose...</option>
+                <option value="1">1 - Very bad</option>
+                <option value="2">2 - Bad</option>
+                <option value="3">3 - Okay</option>
+                <option value="4">4 - Good</option>
+                <option value="5">5 - Excellent</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="comment">Comment (optional)</label>
+            <textarea class="form-control" name="comment" rows="4" maxlength="1000"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+        <a href="/customer_home" class="btn btn-secondary ml-2">Cancel</a>
+    </form>
+</div>
+</body>
+</html>
