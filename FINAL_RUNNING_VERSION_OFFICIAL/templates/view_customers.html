@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customers for Flight</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">🛫 Customers for Flight <strong>{{ airline }} {{ flight_number }}</strong>  
+        <br><small class="text-muted">{{ departure_date }} at {{ departure_time }}</small>
+    </h2>
+
+    {% if customers %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Email</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.customer_email }}</td>
+                    <td>{{ customer.customer_name }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">No customers found for this flight.</div>
+    {% endif %}
+
+    <a href="/staff_home" class="btn btn-primary mt-3">Back to Dashboard</a>
+</div>
+</body>
+</html>
