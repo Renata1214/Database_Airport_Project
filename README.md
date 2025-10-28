@@ -19,7 +19,15 @@ The system is built with **PHP (XAMPP stack)** and **MySQL** (phpMyAdmin).
 3. Import the tables by running the script: createtables.sql. This sets up all necessary tables and initial data.
 
 ## Project Structure
-![alt text](images/structure.png)
+Main_Project_Folder/
+│── FINAL_RUNNING_VERSION_OFFICIAL/
+│ │── myenv/ 
+│ │── templates/ # HTML/PHP templates for pages
+│ │── init1.py #file to run
+│── createtables.sql # SQL file to create all database tables
+│── .gitignore
+│── README.md
+│── requirements.txt
 
 ---
 
