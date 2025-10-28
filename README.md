@@ -20,13 +20,21 @@ The system is built with **PHP (XAMPP stack)** and **MySQL** (phpMyAdmin).
 
 ## Project Structure
 Main_Project_Folder/
+
 │── FINAL_RUNNING_VERSION_OFFICIAL/
+
 │ │── myenv/ 
+
 │ │── templates/ # HTML/PHP templates for pages
+
 │ │── init1.py #file to run
+
 │── createtables.sql # SQL file to create all database tables
+
 │── .gitignore
+
 │── README.md
+
 │── requirements.txt
 
 ---
